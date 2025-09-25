@@ -1,4 +1,4 @@
-import { MapPinCheck } from "lucide-react";
+import { MapPinCheck, Map, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
         {/* Card 1: Consultar Cidades */}
         <div className="card w-full bg-base-100 shadow-xl transition-transform transform hover:scale-105">
           <figure className="px-10 pt-10">
-            <MapPinCheck className="h-16 w-16 text-red-500" />
+            <MapPinCheck className="h-16 w-16 text-primary" />
           </figure>
           <div className="card-body items-center text-center">
             <h2 className="card-title text-base-content">Consultar Cidades Cadastradas</h2>
@@ -45,9 +45,7 @@ export default function Home() {
         {/* Card 2: Cadastrar Cidade */}
         <div className="card w-full bg-base-100 shadow-xl transition-transform transform hover:scale-105">
           <figure className="px-10 pt-10">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21v-8a5 5 0 00-5-5H10a5 5 0 00-5 5v8m14-8a5 5 0 015 5v8a5 5 0 01-5 5" />
-            </svg>
+             <Map className="h-16 w-16 text-secondary" />
           </figure>
           <div className="card-body items-center text-center">
             <h2 className="card-title text-base-content">Cadastrar Nova Cidade</h2>
@@ -63,10 +61,7 @@ export default function Home() {
         {/* Card 3: Cadastrar Local */}
         <div className="card w-full bg-base-100 shadow-xl transition-transform transform hover:scale-105">
           <figure className="px-10 pt-10">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 17.25c-3.15 0-5.75-2.6-5.75-5.75s2.6-5.75 5.75-5.75 5.75 2.6 5.75 5.75-2.6 5.75-5.75 5.75z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2a10 10 0 100 20 10 10 0 000-20z" />
-            </svg>
+             <MapPin className="h-16 w-16 text-accent" />
           </figure>
           <div className="card-body items-center text-center">
             <h2 className="card-title text-base-content">Cadastrar Novo Local</h2>
