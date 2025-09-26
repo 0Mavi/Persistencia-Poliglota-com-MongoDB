@@ -1,47 +1,56 @@
 import { useState } from "react";
 import axios from "axios";
-import { Building2 } from "lucide-react";
+import { Building2, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export default function CadastroCidade() {
   const [nome, setNome] = useState("");
   const [estado, setEstado] = useState("");
+  const [message, setMessage] = useState({ text: "", type: "" });
+  const navigate = useNavigate();
 
   const cadastrar = async () => {
-    if (!nome || !estado) return alert("Preencha nome e estado");
+    if (!nome || !estado) {
+      return setMessage({ text: "Preencha nome e estado.", type: "error" });
+    }
     try {
       await axios.post(`${API}/cidades`, { nome, estado });
-      alert("Cidade cadastrada!");
+      setMessage({ text: "Cidade cadastrada com sucesso!", type: "success" });
       setNome("");
       setEstado("");
     } catch (err) {
       console.error(err);
-      alert("Erro ao cadastrar");
+      setMessage({ text: "Erro ao cadastrar.", type: "error" });
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      {/* Seção Hero */}
-      <div className="hero bg-base-100 rounded-box shadow-xl mb-12 w-full max-w-3xl">
-        <div className="hero-content text-center py-12">
-          <div className="max-w-md">
-            <Building2 className="w-20 h-20 text-primary mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-base-content">
-              Cadastrar Nova Cidade
-            </h1>
-            <p className="py-4 text-base-content">
-              Preencha os dados abaixo para adicionar uma nova cidade ao banco de
-              dados SQLite.
-            </p>
-          </div>
-        </div>
+    <div className="flex flex-col items-center min-h-screen bg-base-300 p-8">
+     
+      <div className="flex items-center w-full max-w-5xl mb-4 p-4 sticky top-0 z-10 bg-base-300/90 backdrop-blur-sm">
+        <button
+          className="btn btn-ghost btn-circle text-base-content/70"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="flex-1 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+          Cadastrar Nova Cidade
+        </h1>
       </div>
 
-      {/* Card de Cadastro */}
-      <div className="card w-full max-w-md bg-base-100 shadow-xl">
+    
+      <div className="card w-full max-w-5xl bg-base-100 shadow-2xl mt-10">
         <div className="card-body">
+          {message.text && (
+            <div className={`alert ${message.type === "error" ? "alert-error" : "alert-success"} mb-4`}>
+              <div>
+                <span>{message.text}</span>
+              </div>
+            </div>
+          )}
           <div className="form-control">
             <label className="label">
               <span className="label-text">Nome da Cidade</span>

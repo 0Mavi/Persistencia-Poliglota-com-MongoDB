@@ -8,8 +8,9 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
-import { Map } from "lucide-react";
+import { ArrowLeft, Map } from "lucide-react"; 
 import "leaflet/dist/leaflet.css";
+import { useNavigate } from "react-router-dom"; 
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -23,7 +24,7 @@ L.Icon.Default.mergeOptions({
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-// 🔹 Força ajuste do mapa ao renderizar
+
 function FixMap() {
   const map = useMap();
   useEffect(() => {
@@ -34,7 +35,7 @@ function FixMap() {
   return null;
 }
 
-// 🔹 Move/da zoom no mapa quando locais filtrados mudam
+
 function ZoomToCity({ locais }) {
   const map = useMap();
 
@@ -46,65 +47,72 @@ function ZoomToCity({ locais }) {
           l.coordenadas.longitude,
         ])
       );
-      map.fitBounds(bounds, { padding: [50, 50] }); // zoom automático
+      map.fitBounds(bounds, { padding: [50, 50] }); 
     }
   }, [locais, map]);
 
   return null;
 }
 
+
+const customMarkerIcon = new L.Icon({
+  iconUrl: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235A67D8' stroke='none'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z'/%3E%3C/svg%3E`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
 export default function Consulta() {
   const [locais, setLocais] = useState([]);
   const [cidades, setCidades] = useState([]);
   const [cidadeSelecionada, setCidadeSelecionada] = useState("");
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    // pega cidades no SQLite
+   
     axios
       .get(`${API}/cidades`)
       .then((res) => setCidades(res.data))
       .catch(console.error);
 
-    // pega locais no MongoDB
+   
     axios
       .get(`${API}/locais`)
       .then((res) => setLocais(res.data))
       .catch(console.error);
   }, []);
 
-  // filtra locais pela cidade escolhida
+
   const locaisFiltrados = cidadeSelecionada
     ? locais.filter((l) => l.cidade === cidadeSelecionada)
     : locais;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      {/* Hero */}
-      <div className="hero bg-base-100 rounded-box shadow-xl mb-12 w-full max-w-5xl">
-        <div className="hero-content text-center py-12">
-          <div className="max-w-md">
-            <Map className="w-20 h-20 text-primary mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-base-content">
-              Locais Cadastrados
-            </h1>
-            <p className="py-4 text-base-content">
-              Explore os pontos de interesse cadastrados no MongoDB
-              diretamente no mapa interativo abaixo.
-            </p>
-          </div>
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-base-300 p-8">
+ 
+      <div className="flex items-center w-full max-w-5xl mb-8">
+        <button
+          className="btn btn-ghost btn-circle text-base-content/70"
+          onClick={() => navigate("/")}
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="flex-1 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+          Locais Cadastrados
+        </h1>
       </div>
 
-      {/* Select de cidades */}
-      <div className="card w-full max-w-5xl bg-base-100 shadow-md mb-8">
-        <div className="card-body">
+   
+      <div className="w-full max-w-5xl">
+     
+        <div className="mb-8">
           <label className="label">
-            <span className="label-text text-base-content">
+            <span className="label-text text-base-content font-semibold text-lg mb-6">
               Filtrar por cidade:
             </span>
           </label>
           <select
-            className="select select-bordered w-full"
+            className="select select-bordered select-lg w-full bg-base-100 shadow-md "
             value={cidadeSelecionada}
             onChange={(e) => setCidadeSelecionada(e.target.value)}
           >
@@ -116,42 +124,36 @@ export default function Consulta() {
             ))}
           </select>
         </div>
-      </div>
 
-      {/* Card com o mapa */}
-      <div className="card w-full max-w-5xl bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title text-base-content mb-4">
-            Mapa Interativo
-          </h2>
-          <div className="w-full h-[500px] rounded-lg overflow-hidden border border-base-300">
-            <MapContainer
-              center={[-7.11532, -34.861]}
-              zoom={13}
-              className="w-full h-full"
-            >
-              <FixMap />
-              <ZoomToCity locais={locaisFiltrados} />
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              {locaisFiltrados.map((l) => (
-                <Marker
-                  key={l._id}
-                  position={[
-                    l.coordenadas.latitude,
-                    l.coordenadas.longitude,
-                  ]}
-                >
-                  <Popup>
-                    <strong>{l.nome_local}</strong>
-                    <br />
-                    {l.descricao || ""}
-                    <br />
-                    <em>{l.cidade}</em>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
+      
+        <div className="w-full h-[500px] rounded-xl overflow-hidden shadow-2xl border-t-4 ">
+          <MapContainer
+            center={[-7.11532, -34.861]}
+            zoom={13}
+            className="w-full h-full"
+          >
+            <FixMap />
+            <ZoomToCity locais={locaisFiltrados} />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            {locaisFiltrados.map((l) => (
+              <Marker
+                key={l._id}
+                position={[
+                  l.coordenadas.latitude,
+                  l.coordenadas.longitude,
+                ]}
+                icon={customMarkerIcon} 
+              >
+                <Popup>
+                  <strong>{l.nome_local}</strong>
+                  <br />
+                  {l.descricao || ""}
+                  <br />
+                  <em>{l.cidade}</em>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
         </div>
       </div>
     </div>
