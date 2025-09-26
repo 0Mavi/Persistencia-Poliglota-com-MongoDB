@@ -1,5 +1,7 @@
 # Ignora arquivos de ambiente com dados sensíveis
 .env
+backend/.env
+
 
 # Ignora a pasta de dependências do backend
 backend/node_modules/
